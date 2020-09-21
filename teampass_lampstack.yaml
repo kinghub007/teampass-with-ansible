@@ -1,0 +1,76 @@
+---
+- name: teampass playbook
+  hosts: ansible_client
+  remote_user: ec2-user
+  become: true
+  tasks:
+
+         - name: remove dependencies
+           apt:
+                  autoremove: yes
+
+         - name: install repo 
+           apt:
+                  name:
+                  - software-properties-common
+                  state: present
+         
+         - name: add repo
+           apt_repository: 
+                   repo: ppa:ondrej/php
+
+         - name: update
+           apt:
+                   update_cache: yes 
+
+         - name: install packages
+           apt:
+                   name: 
+                   - apache2
+                   - libapache2-mod-php7.4
+                   - php7.4
+                   - php7.4-cli
+                   - php7.4-mysql
+                   - php7.4-mbstring
+                   - php7.4-fpm 
+                   - php7.4-common
+                   - php7.4-xml 
+                   - php7.4-gd 
+                   - php7.4-curl 
+                   - openssl 
+                   - php7.4-bcmath
+                   - php7.4-ldap
+                   - mariadb-server
+                   - git
+                   - wget
+                   state: latest      
+        
+         - name: run apache2
+           service:
+                   name: apache2
+                   enabled: yes
+                   state: started
+
+         - name: run mariadb
+           service:
+                   name: mariadb
+                   state: started
+
+         - name: change max execution time in cli-php.ini
+           command: sed -i 's/max_execution_time = 30/max_execution_time = 360/g' /etc/php/7.4/cli/php.ini
+
+         - name: change max execution time in apache2-php.ini
+           command: sed -i 's/max_execution_time = 30/max_execution_time = 360/g' /etc/php/7.4/apache2/php.ini
+
+         - name: change upload file size cli-php.ini
+           command: sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 100M/g' /etc/php/7.4/cli/php.ini
+
+         - name: change upload file size apache2-php.ini
+           command: sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 100M/g' /etc/php/7.4/apache2/php.ini
+         
+         - name: run apache2
+           service:
+                   name: apache2
+                   enabled: yes
+                   state: restarted
+

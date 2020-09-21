@@ -1,0 +1,41 @@
+---
+- name: mariadb module
+  hosts: ansible_client
+  remote_user: ec2-user
+  vars_files:
+    - ./vars/mysql_pass.yml 
+  become: true
+  tasks:
+          - name: install packages
+            apt:
+                    name:
+                        - python3-pip
+                        - libmariadb-dev
+                    state: latest
+
+          - name: install Python MariaDB module
+            pip:
+                    name: pymysql
+         
+          - name: create db user teampass admin
+            mysql_user:
+                    user: teampass_admin
+                    password: "{{ teampass_sqlpass }}" 
+                    priv: "*.*:ALL"
+                    state: present
+                    login_unix_socket: /var/run/mysqld/mysqld.sock
+#            no_log: true
+
+          - name: create db teampass
+            mysql_db:
+                    db: teampass
+                    state: present
+                    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+          - name: Set mysql user privileges
+            mysql_user:
+                    name: teampass_admin
+                    password: "{{ teampass_sqlpass }}"
+                    priv: "teampass.*:ALL"
+                    state: present
+                    login_unix_socket: /var/run/mysqld/mysqld.sock

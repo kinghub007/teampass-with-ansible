@@ -1,0 +1,12 @@
+---
+- name: teampass playbook
+  hosts: ansible_client
+  remote_user: ec2-user
+  become: true
+  tasks:
+
+         - name: clone teampass repo
+           git:
+                  repo: 'https://github.com/nilsteampassnet/TeamPass.git'
+                  dest: /var/www/html/teampass  
+                  clone: yes
