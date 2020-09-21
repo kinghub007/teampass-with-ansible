@@ -10,3 +10,12 @@
                   repo: 'https://github.com/nilsteampassnet/TeamPass.git'
                   dest: /var/www/html/teampass  
                   clone: yes
+                  
+         - name: set required permission                                                                                              
+           file:                                                                                                                      
+                        path: /var/www/html/teampass/                                                                                 
+                        state: directory                                                                                              
+                        owner: www-data                                                                                               
+                        group: www-data                                                                                               
+                        recurse: yes                                                                                                  
+                        mode: '0775'
